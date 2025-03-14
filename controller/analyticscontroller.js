@@ -11,7 +11,7 @@ exports.getDashboardStats = async (req, res, next) => {
       topSkills: [],
       recentActivity: [],
       monthlyGrowth: []
-    };
+    }; 
 
     // Get endorsement counts
     if (req.user.userType === 'professional') {

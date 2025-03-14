@@ -12,7 +12,7 @@ exports.register = async (req, res, next) => {
     }
 
     const user = new User(req.body);
-    await user.save();
+    await user.save(); 
     
     const token = generateToken(user._id);
     res.status(201).json({

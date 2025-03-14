@@ -5,6 +5,10 @@ const endorsementSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  title: {
+    type: String,
+    required: true,
+  },
   professional: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -21,6 +25,20 @@ const endorsementSchema = new mongoose.Schema({
     default: 'pending',
   },
   description: String,
+  institutionalSupport: {
+    fundingSupport: {
+      required: Boolean,
+      details: String
+    },
+    timeAllocation: {
+      required: Boolean,
+      details: String
+    },
+    resourceAccess: {
+      required: Boolean,
+      details: String
+    }
+  },
   verificationDate: Date,
   expiryDate: Date,
   attachments: [String],

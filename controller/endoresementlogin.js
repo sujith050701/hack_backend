@@ -1,13 +1,36 @@
 const Endorsement = require('../Model/endorsement');
 const AppError = require('../utils/apperror');
-
 exports.createEndorsement = async (req, res, next) => {
   try {
-    const endorsement = new Endorsement({
+    // Extract and sanitize institutional support data
+    const sanitizedData = {
       ...req.body,
       professional: req.user._id,
-    });
+      status: 'pending',
+      institutionalSupport: {
+        fundingSupport: {
+          required: req.body.institutionalSupport?.fundingSupport?.required || false,
+          details: req.body.institutionalSupport?.fundingSupport?.details || ''
+        },
+        timeAllocation: {
+          required: req.body.institutionalSupport?.timeAllocation?.required || false,
+          details: req.body.institutionalSupport?.timeAllocation?.details || ''
+        },
+        resourceAccess: {
+          required: req.body.institutionalSupport?.resourceAccess?.required || false,
+          details: req.body.institutionalSupport?.resourceAccess?.details || ''
+        }
+      }
+    };
+
+    // Create endorsement with sanitized data
+    const endorsement = new Endorsement(sanitizedData);
+
+    // Save the endorsement
     await endorsement.save();
+
+    // Populate the institution details before sending response
+    await endorsement.populate('institution', 'name');
 
     res.status(201).json({
       status: 'success',
@@ -66,6 +89,26 @@ exports.getPendingEndorsements = async (req, res, next) => {
     const endorsements = await Endorsement.find({
       institution: req.user._id,
       status: 'pending',
+    }).populate('professional', 'name email');
+
+    res.json({
+      status: 'success',
+      data: { endorsements }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// Add this to your endorsement controller
+exports.getVerifiedEndorsements = async (req, res, next) => {
+  try {
+    if (req.user.userType !== 'institution') {
+      throw new AppError('Not authorized', 403);
+    }
+
+    const endorsements = await Endorsement.find({
+      institution: req.user._id,
+      status: 'verified',
     }).populate('professional', 'name email');
 
     res.json({
