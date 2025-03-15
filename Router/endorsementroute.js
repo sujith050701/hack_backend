@@ -13,4 +13,4 @@ router.patch('/:id/verify', endorsementController.verifyEndorsement);
 // In your routes file
 router.get('/verified', auth, endorsementController.getVerifiedEndorsements);
 
-module.exports = router;
+module.exports = router; 
